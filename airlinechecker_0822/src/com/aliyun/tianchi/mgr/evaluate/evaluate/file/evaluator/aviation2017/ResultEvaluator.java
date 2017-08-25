@@ -689,7 +689,7 @@ public class ResultEvaluator implements Cloneable{
             if(!signChangeLegalityFlag){
                 constraintViolationNum += 1;
                 isFeasible = false;
-                System.out.println("换飞机、机型变化、超售（其实就是乘客数量大于座位数量）");
+                System.out.println("换飞机、机型变化、超售（其实就是乘客数量大于座位数量）  "+totalPassengerNum+" "+seatNum+" "+resultFlight.getFlightId()+" "+resultFlight.getAirplaneId());
             }
             if(totalSignChangePassNum > availableSignChangePassNum){//签转旅客数量不能大于可以签转的旅客数量
                 constraintViolationNum += 1;
