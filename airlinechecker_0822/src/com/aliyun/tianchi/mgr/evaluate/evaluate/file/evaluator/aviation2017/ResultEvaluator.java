@@ -884,7 +884,7 @@ public class ResultEvaluator implements Cloneable{
             List<Long> timeList = affectedAirportTimeListMap.get(airport);
             if(!inputData.getCapacityLimitation().isSatisfyCapacityLimitation(timeList)){
                 constraintViolationNum += 1;
-                System.out.println("判断单位时间容量限制");
+                System.out.println("判断单位时间容量限制  "+airport+" ");
                 isFeasible = false;
             }
         }

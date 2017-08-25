@@ -12,8 +12,8 @@ public class Evaluator {
     public static void main(String[] args) {
     	 String inputDataFilePath = "data/厦航大赛数据20170814.xlsx";
          //String resultDataFilePath = "data/baseline_result_2.csv";
-         //String resultDataFilePath = "data/firstresult826.csv";
-         String resultDataFilePath = "data/pony_517159.5_240.csv";
+         String resultDataFilePath = "data/firstresult825_pony.csv";
+         //String resultDataFilePath = "data/pony_517159.5_240.csv";
          
          
         try {
