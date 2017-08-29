@@ -790,7 +790,7 @@ public class ResultEvaluator implements Cloneable{
                 int totalSignInChangePassNum =  getPassengerNum(flightId, passTransInfo, 3);
                 if(resultFlight.isCancel()){
                     //获得取消旅客的cost
-                    if(originFlight.isConnected() && originFlight.isConnectedPrePart()
+                    if(originFlight.isConnected() && originFlight.isConnectedPrePart()  //当前取消的航班为联程第一截
                             && originFlight.getPassengerNum() + originFlight.getConnectPassengerNum() - totalSignOutChangePassNum > 0){//以防违背约束后，人数差为负数，导致结果分数异常
                         //如果取消的是联程航班的前部分，则没有拉直，需要统计联程旅客取消人数
                         passengerCancelScore += (originFlight.getPassengerNum() + originFlight.getConnectPassengerNum() - totalSignOutChangePassNum)
@@ -849,7 +849,7 @@ public class ResultEvaluator implements Cloneable{
                     }
                     if(originFlight.isConnected()){//如果是没有拉直的联程航班
                         String nextFlightId = originFlight.getConnectedFlightId();
-                        if(resultFlightMap.get(nextFlightId).isCancel()) { //联程航班取消
+                        if(resultFlightMap.get(nextFlightId).isCancel()) { //联程航班第二截取消，则cancel cost也加到第一截（原则就是无论如何联程乘客的cost加到第一截）
                             totalPassengerNum -= originFlight.getConnectPassengerNum();
                             if(originFlight.isConnectedPrePart()){
                                 totalCancelPassenger += originFlight.getConnectPassengerNum();
