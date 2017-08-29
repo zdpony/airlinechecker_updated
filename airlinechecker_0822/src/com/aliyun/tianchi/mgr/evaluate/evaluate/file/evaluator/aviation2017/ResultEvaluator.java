@@ -77,6 +77,7 @@ public class ResultEvaluator implements Cloneable{
                 //不能存在重复航班
                 if(resultFlightMap.containsKey(resultFlight.getFlightId())){
                     constraintViolationNum += 1;
+                    System.out.println("不能存在重复航班");
                     isFeasible = false;
                 }
                 resultFlightMap.put(resultFlight.getFlightId(), resultFlight);
@@ -621,7 +622,7 @@ public class ResultEvaluator implements Cloneable{
             if(signChangeResultFlight.getStartDateTime().getTime()
                     < originFlight.getStartDateTime().getTime()){ //签转旅客只能延误
                 constraintViolationNum += 1;
-                System.out.println("签转旅客只能延误");
+                System.out.println("签转旅客只能延误 "+flightId+" -> "+signChangeFlightId+" "+signChangeResultFlight.getStartDateTime()+" "+originFlight.getStartDateTime());
                 isFeasible = false;
             }
             if(!signChangeResultFlight.getStartAirport().equals(originFlight.getStartAirport())
@@ -650,9 +651,8 @@ public class ResultEvaluator implements Cloneable{
             //获得中转到当前航班的取消旅客数量
             int transferCancelPassNum =  getPassengerNum(flightId, passTransInfo, 1);
             if(totalSignChangePassNum > originFlight.getNormalPassengerNum() - transferCancelPassNum){//签转旅客数量不能大于剩余的普通旅客数量
-            	System.out.println("签转旅客数量不能大于剩余的普通旅客数量");
+            	System.out.println("签转旅客数量不能大于剩余的普通旅客数量 "+flightId+" "+totalSignChangePassNum+" "+originFlight.getNormalPassengerNum()+" "+transferCancelPassNum);
                 constraintViolationNum += 1;
-                System.out.println("签转旅客数量不能大于剩余的普通旅客数量");
                 isFeasible = false;
             }
         }
@@ -759,10 +759,13 @@ public class ResultEvaluator implements Cloneable{
                 }
             }
         }
+        
+        double transferCancelCost = 0;
+        double missTransferCost = 0;
         //第三步统计每个航班的旅客组成，以及cost计算
         for(int index = 0; index < resultFlightList.size(); ++index){
             ResultFlight resultFlight = resultFlightList.get(index);
-            System.out.print(resultFlight.getFlightId()+':');
+           // System.out.print(resultFlight.getFlightId()+':');
             double passengerCancelScoreSub = 0;
             String flightId = resultFlight.getFlightId();
             //调机航班不允许签转
@@ -799,12 +802,15 @@ public class ResultEvaluator implements Cloneable{
                     }
                     else{
                         if(originFlight.getPassengerNum() - totalSignOutChangePassNum > 0) {//以防违背约束后，人数差为负数，导致结果分数异常
-                            passengerCancelScore += (originFlight.getPassengerNum() - totalSignOutChangePassNum)
+                        	
+                        	passengerCancelScore += (originFlight.getPassengerNum() - totalSignOutChangePassNum)
                                     * Configuration.getCancelPassengerParam();
+                           
                             //System.out.print("其他乘客取消,"+ (originFlight.getPassengerNum() - totalSignOutChangePassNum)
                                     //* Configuration.getCancelPassengerParam()+" ");
                             passengerCancelScoreSub += (originFlight.getPassengerNum() - totalSignOutChangePassNum)
                                     * Configuration.getCancelPassengerParam();
+                            
                         }
                     }
                 }
@@ -827,10 +833,16 @@ public class ResultEvaluator implements Cloneable{
                     int totalCancelPassenger = 0;
                     //获得中转到当前航班的取消旅客数量
                     int transferCancelPassNum =  getPassengerNum(flightId, passTransInfo, 1);
+                    
+                    transferCancelCost += transferCancelPassNum;
+                    
                     totalPassengerNum -= transferCancelPassNum;
                     totalCancelPassenger += transferCancelPassNum;
                     //获得中转失败的旅客数量
                     int transferFailPassNum =  getPassengerNum(flightId, passTransInfo, 2);
+                    
+                    missTransferCost += transferFailPassNum;
+                    
                     if(transferFailPassNum > 0){ //中转失败
                         totalPassengerNum -= transferFailPassNum;
                         totalCancelPassenger += transferFailPassNum;
@@ -863,7 +875,7 @@ public class ResultEvaluator implements Cloneable{
                         passengerDelayScore += totalPassengerNum * Configuration.getNormalPassengerDelayParam(delayHour);
                     }
                     if(totalPassengerNum + totalSignInChangePassNum > seatNum){//签转旅客到某航班，必须满足该航班的座位数限制
-                    	System.out.println("error 1 : "+flightId+" "+totalPassengerNum+" "+totalSignInChangePassNum+" "+seatNum);
+                    	System.out.println("签转旅客到某航班，必须满足该航班的座位数限制 : "+flightId+" "+totalPassengerNum+" "+totalSignInChangePassNum+" "+seatNum);
                     	constraintViolationNum += 1;
                         isFeasible = false;
                     }
@@ -872,8 +884,9 @@ public class ResultEvaluator implements Cloneable{
                 //获得签转旅客的延迟开销
                 signChangePassengerDelayScore += getSignChangePassengerDelayCost(flightId, passTransInfo);
             }
-            System.out.println(passengerCancelScoreSub);
+           // System.out.println(passengerCancelScoreSub);
         }
+        
     }
 
     /**

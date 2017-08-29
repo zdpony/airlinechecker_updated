@@ -75,6 +75,13 @@ public class CapacityLimitation {
             }
         }
         
+        iter = sliceMap.keySet().iterator();
+        while(iter.hasNext()){
+            Integer key = iter.next();
+            System.out.print("["+key+","+sliceMap.get(key)+"] ");
+        }
+        System.out.println();
+        
         
         //判断每5分钟内是否只有2个航班起飞和降落
         iter = sliceMap.keySet().iterator();

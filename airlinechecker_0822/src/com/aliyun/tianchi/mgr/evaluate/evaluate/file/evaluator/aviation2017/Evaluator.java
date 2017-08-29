@@ -17,7 +17,6 @@ public class Evaluator {
 
          //String resultDataFilePath = "data/pony_517159.5_240.csv";
          
-         
         try {
             //计算所得分数
             InputStream inputDataStream = new FileInputStream(inputDataFilePath);
